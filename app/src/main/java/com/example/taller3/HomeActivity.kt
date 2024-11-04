@@ -12,6 +12,8 @@ import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.IntentSenderRequest
@@ -37,6 +39,7 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.firebase.auth.FirebaseAuth
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
@@ -45,6 +48,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityHomeBinding
+    private lateinit var auth: FirebaseAuth
 
     //permiso de la ubicacion
     val locationPermission = registerForActivityResult(
@@ -81,11 +85,13 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
         locationClient = LocationServices.getFusedLocationProviderClient(this)
         locationRequest = createLocationRequest()
         locationCallback = createLocationCallBack()
 
+        auth = FirebaseAuth.getInstance()
 
         locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
@@ -208,7 +214,27 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         return (6366000 * tt).toFloat()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.homenu, menu)
+        return true
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.signOut -> {
+                auth.signOut()
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                true
+            }
+            R.id.available -> {
+                Toast.makeText(this, "Available clicked", Toast.LENGTH_SHORT).show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
 
 }
