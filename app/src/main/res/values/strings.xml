@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Taller 3</string>
+    <string name="title_activity_home">homeActivity</string>
+</resources>
