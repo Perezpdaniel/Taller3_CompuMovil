@@ -5,7 +5,7 @@
     >
     <item
         android:id="@+id/photo"
-        android:icon="@drawable/baseline_photo_camera_24"
+        android:icon="@drawable/baseline_location_pin_24"
         android:title="Settings"
         app:showAsAction="always" />
     <item
