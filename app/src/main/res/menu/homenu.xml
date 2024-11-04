@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FFFFFF"
+    >
+    <item
+        android:id="@+id/photo"
+        android:icon="@drawable/baseline_location_pin_24"
+        android:title="Settings"
+        app:showAsAction="always" />
     <item
         android:id="@+id/photo"
         android:icon="@drawable/baseline_person_24"
@@ -14,10 +20,22 @@
         android:title="Sign Out"
         />
     <item
-        android:title="Marcar como disponible"
         android:id="@+id/available"
         android:icon="@drawable/baseline_check_circle_24"
-
+        android:title="Marcar como disponible"
+        android:color="#000000"
+        android:visible="true" />
+    <item
+        android:id="@+id/notAvailable"
+        android:icon="@drawable/baseline_do_not_disturb_24"
+        android:title="Marcar como No disponible"
+        android:color="#000000"
+        android:visible="true" />
+    <item
+        android:title="Buscar Disponibles"
+        android:id="@+id/search"
+        android:icon="@drawable/baseline_person_search_24"
+        android:color="#000000"
         />
     <item
         android:title="Marcar como NO disponible"

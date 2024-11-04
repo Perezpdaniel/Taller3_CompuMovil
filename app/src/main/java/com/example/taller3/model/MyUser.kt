@@ -12,7 +12,7 @@ class MyUser : Serializable {
     var id: String = ""
     var latitud: Double = 0.0
     var longitud: Double = 0.0
-    var available: Boolean = true
+    var available: Boolean = false
 
     constructor()
 
@@ -36,6 +36,5 @@ class MyUser : Serializable {
         this.latitud = latitud
         this.longitud = longitud
         this.available = available
-
     }
 }
