@@ -88,7 +88,6 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-
     private fun registerUser() {
         val nombre = binding.nombre.text.toString()
         val apellido = binding.apellido.text.toString()
@@ -103,31 +102,33 @@ class RegisterActivity : AppCompatActivity() {
                         val firebaseUser = auth.currentUser
                         val userId = firebaseUser?.uid ?: return@addOnCompleteListener
 
-                    // Convert the Uri to a string
-                    val imageUriString = profileImageUri?.toString()
+                        // Convert the Uri to a string
+                        val imageUriString = profileImageUri?.toString()
 
-                    // Create the MyUser object with the data and the image URI string
-                    val user = MyUser(
-                        name = nombre,
-                        lastname = apellido,
-                        email = email,
-                        password = password,
-                        image = imageUriString,
-                        id = id,
-                        latitud = 0.0,  // Replace these values with the actual latitude and longitude
-                        longitud = 0.0,
-                        available = false
+                        // Create the MyUser object with the data and the image URI string
+                        val user = MyUser(
+                            name = nombre,
+                            lastname = apellido,
+                            email = email,
+                            password = password,
+                            image = imageUriString,
+                            id = id,
+                            latitud = 0.0,  // Replace these values with the actual latitude and longitude
+                            longitud = 0.0,
+                            available = false
+                        )
 
-                    )
+                        // Save the user to the Firebase Realtime Database
+                        database.child("users").child(userId).setValue(user)
+                            .addOnCompleteListener { dbTask ->
+                                if (dbTask.isSuccessful) {
+                                    Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(this, HomeActivity::class.java))
+                                } else {
+                                    Toast.makeText(this, "Error al guardar los datos del usuario: ${dbTask.exception?.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
 
-                    // Save the user to the Firebase Realtime Database
-                    database.child("users").child(userId).setValue(user)
-                        .addOnCompleteListener { dbTask ->
-                            if (dbTask.isSuccessful) {
-                                Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                                startActivity(Intent(this, HomeActivity::class.java))
-                            } else {
-                                Toast.makeText(this, "Error al guardar los datos del usuario: ${dbTask.exception?.message}", Toast.LENGTH_SHORT).show()
                         profileImageUri?.let { uri ->
                             uploadImageFirebase(userId, uri) { imageUrl ->
                                 saveUserToDatabase(userId, nombre, apellido, email, password, id, imageUrl)
@@ -156,7 +157,7 @@ class RegisterActivity : AppCompatActivity() {
             }
     }
 
-    fun saveUserToDatabase(userId: String, nombre: String, apellido: String, email: String, password: String, id: String, imageUrl: String?) {
+    private fun saveUserToDatabase(userId: String, nombre: String, apellido: String, email: String, password: String, id: String, imageUrl: String?) {
         val user = MyUser(
             name = nombre,
             lastname = apellido,
