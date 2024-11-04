@@ -41,7 +41,7 @@ import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
 
-class homeActivity : AppCompatActivity(), OnMapReadyCallback {
+class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityHomeBinding
@@ -155,6 +155,7 @@ class homeActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                     }
                     posActual = result.lastLocation!!
+                    mMap.clear()
                     drawMarker(LatLng(posActual!!.latitude,posActual!!.longitude),"nueva",R.drawable.baseline_location_pin_24)
                 }
             }
