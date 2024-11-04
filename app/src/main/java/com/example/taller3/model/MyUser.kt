@@ -8,7 +8,7 @@ class MyUser : Serializable {
     var lastname: String = ""
     var email: String = ""
     var password: String = ""
-    var image: Uri? = null
+    var image: String? = null
     var id: String = ""
     var latitud: Double = 0.0
     var longitud: Double = 0.0
@@ -20,7 +20,7 @@ class MyUser : Serializable {
         lastname: String,
         email: String,
         password: String,
-        image: Uri?,
+        image: String?,
         id: String,
         latitud: Double,
         longitud: Double

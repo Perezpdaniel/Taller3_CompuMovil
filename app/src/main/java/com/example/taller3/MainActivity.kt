@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         // Listener para el botón de registro
         binding.signup.setOnClickListener {
-            //codigo
+            startActivity(Intent(baseContext, RegisterActivity::class.java))
         }
 
         // Listener para el botón de iniciar sesión
