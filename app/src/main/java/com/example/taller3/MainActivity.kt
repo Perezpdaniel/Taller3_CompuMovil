@@ -3,6 +3,8 @@ package com.example.taller3
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.taller3.databinding.ActivityMainBinding
@@ -128,4 +130,5 @@ class MainActivity : AppCompatActivity() {
         val regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$"
         return email.matches(regex.toRegex())
     }
+
 }
