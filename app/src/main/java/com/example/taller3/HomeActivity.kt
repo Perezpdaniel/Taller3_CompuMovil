@@ -40,6 +40,7 @@ import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
@@ -228,13 +229,62 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 startActivity(intent)
                 true
             }
+
             R.id.available -> {
-                Toast.makeText(this, "Available clicked", Toast.LENGTH_SHORT).show()
+                val userId = auth.currentUser?.uid
+                if (userId != null) {
+                    val database = FirebaseDatabase.getInstance().reference
+                    database.child("users").child(userId).child("availabe").setValue(true)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(this, "Availability updated", Toast.LENGTH_SHORT)
+                                    .show()
+                            } else {
+                                Toast.makeText(
+                                    this,
+                                    "Failed to update availability: ${task.exception?.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                } else {
+                    Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+                }
                 true
             }
+            R.id.notAvailable -> {
+                val userId = auth.currentUser?.uid
+                if (userId != null) {
+                    val database = FirebaseDatabase.getInstance().reference
+                    database.child("users").child(userId).child("availabe").setValue(false)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(this, "Availability updated", Toast.LENGTH_SHORT)
+                                    .show()
+                            } else {
+                                Toast.makeText(
+                                    this,
+                                    "Failed to update availability: ${task.exception?.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                } else {
+                    Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
+            R.id.search -> {
+                //val intent = Intent(this, SearchActivity::class.java)
+                startActivity(intent)
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
+
     }
+
 
 
 }
