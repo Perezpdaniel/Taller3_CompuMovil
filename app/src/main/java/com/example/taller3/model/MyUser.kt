@@ -12,6 +12,7 @@ class MyUser : Serializable {
     var id: String = ""
     var latitud: Double = 0.0
     var longitud: Double = 0.0
+    var availabe: Boolean = false
 
     constructor()
 
@@ -23,7 +24,8 @@ class MyUser : Serializable {
         image: String?,
         id: String,
         latitud: Double,
-        longitud: Double
+        longitud: Double,
+        availabe: Boolean
     ) {
         this.name = name
         this.lastname = lastname
@@ -33,5 +35,6 @@ class MyUser : Serializable {
         this.id = id
         this.latitud = latitud
         this.longitud = longitud
+        this.availabe = availabe
     }
 }
