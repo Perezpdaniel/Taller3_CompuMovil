@@ -110,7 +110,9 @@ private fun openGallery() {
                         image = imageUriString,
                         id = id,
                         latitud = 0.0,  // Replace these values with the actual latitude and longitude
-                        longitud = 0.0
+                        longitud = 0.0,
+                        available = false
+
                     )
 
                     // Save the user to the Firebase Realtime Database

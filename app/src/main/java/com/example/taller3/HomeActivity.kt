@@ -40,6 +40,7 @@ import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
@@ -229,7 +230,31 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 true
             }
             R.id.available -> {
-                Toast.makeText(this, "Available clicked", Toast.LENGTH_SHORT).show()
+                val userId = auth.currentUser?.uid
+                if (userId != null) {
+                    val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
+                    database.child("available").setValue(true)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Available status updated", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Failed to update status", Toast.LENGTH_SHORT).show()
+                        }
+                }
+                true
+            }
+            R.id.noAvailable -> {
+                val userId = auth.currentUser?.uid
+                if (userId != null) {
+                    val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
+                    database.child("available").setValue(false)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Available status updated", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Failed to update status", Toast.LENGTH_SHORT).show()
+                        }
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
