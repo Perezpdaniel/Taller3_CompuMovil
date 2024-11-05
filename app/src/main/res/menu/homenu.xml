@@ -3,18 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="#FFFFFF"
     >
-    <item
-        android:id="@+id/photo"
-        android:icon="@drawable/baseline_person_24"
-        android:title="Settings"
-        app:showAsAction="always" />
 
     <item
         android:id="@+id/signOut"
         android:icon="@drawable/baseline_output_24"
         android:title="Sign Out"
-        />
-    <item
+        app:showAsAction="always" />    <item
         android:id="@+id/available"
         android:icon="@drawable/baseline_check_circle_24"
         android:title="Marcar como disponible"

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.location.Location
@@ -14,6 +15,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.IntentSenderRequest
@@ -41,6 +43,8 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import java.io.File
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
@@ -163,6 +167,10 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                     posActual = result.lastLocation!!
                     mMap.clear()
+                    val userId = auth.currentUser?.uid ?: return
+                    val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
+                    database.child("latitud").setValue(posActual!!.latitude)
+                    database.child("longitud").setValue(posActual!!.longitude)
                     drawMarker(LatLng(posActual!!.latitude,posActual!!.longitude),"nueva",R.drawable.baseline_location_pin_24)
                 }
             }
@@ -219,6 +227,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         menuInflater.inflate(R.menu.homenu, menu)
         return true
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
