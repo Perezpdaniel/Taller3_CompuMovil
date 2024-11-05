@@ -12,6 +12,7 @@ import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -41,6 +42,8 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import org.json.JSONArray
+import org.json.JSONObject
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
@@ -57,7 +60,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             if(it){//granted
                 locationSettings()
             }else {//denied
-                startActivity(Intent(baseContext,MainActivity::class.java))
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -93,7 +96,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         locationCallback = createLocationCallBack()
 
         auth = FirebaseAuth.getInstance()
-
         locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -113,10 +115,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        mMap.uiSettings.isZoomControlsEnabled = true
+        readLocations()
     }
 
     fun drawMarker(location : LatLng, description : String?, icon: Int){
@@ -162,8 +162,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                     }
                     posActual = result.lastLocation!!
-                    mMap.clear()
-                    drawMarker(LatLng(posActual!!.latitude,posActual!!.longitude),"nueva",R.drawable.baseline_location_pin_24)
+                    drawMarker(LatLng(posActual!!.latitude,posActual!!.longitude),"PosDelUsuario",R.drawable.baseline_add_location_24)
                 }
             }
         }
@@ -271,6 +270,20 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
+    fun readLocations() {
+        val json_string = this.assets.open("locations.json").bufferedReader().use { it.readText() }
+        val jsonObject = JSONObject(json_string)
+        val jsonArray = jsonObject.getJSONArray("locationsArray")
+        for (i in 0 until jsonArray.length()) {
+            val locationObject = jsonArray.getJSONObject(i)
+            val latitude = locationObject.getDouble("latitude")
+            val longitude = locationObject.getDouble("longitude")
+            val name = locationObject.getString("name")
 
+            Log.i("Location", "Location: $name, $latitude, $longitude")
+            val latLng = LatLng(latitude, longitude)
+            drawMarker(latLng, name, R.drawable.baseline_location_pin_24)
+        }
+    }
 
 }
