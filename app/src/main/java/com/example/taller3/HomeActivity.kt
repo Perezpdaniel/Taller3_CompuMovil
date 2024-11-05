@@ -154,6 +154,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+
     fun createLocationCallBack(): LocationCallback {
     val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
