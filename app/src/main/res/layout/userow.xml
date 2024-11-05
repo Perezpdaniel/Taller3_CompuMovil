@@ -19,7 +19,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:gravity="center_vertical"
-        android:layout_weight="4"
+        android:layout_weight="6"
         android:text="Name" />
     <Button
         android:layout_width="wrap_content"
