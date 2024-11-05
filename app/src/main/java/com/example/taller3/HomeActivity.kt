@@ -245,9 +245,10 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
                 true
             }
-            R.id.noAvailable -> {
+            R.id.notAvailable -> {
                 val userId = auth.currentUser?.uid
                 if (userId != null) {
+
                     val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
                     database.child("available").setValue(false)
                         .addOnSuccessListener {
@@ -256,31 +257,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                         .addOnFailureListener {
                             Toast.makeText(this, "Failed to update status", Toast.LENGTH_SHORT).show()
                         }
-
-                } else {
-                    Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
-                }
-                true
-            }
-            R.id.notAvailable -> {
-                val userId = auth.currentUser?.uid
-                if (userId != null) {
-                    val database = FirebaseDatabase.getInstance().reference
-                    database.child("users").child(userId).child("availabe").setValue(false)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                Toast.makeText(this, "Availability updated", Toast.LENGTH_SHORT)
-                                    .show()
-                            } else {
-                                Toast.makeText(
-                                    this,
-                                    "Failed to update availability: ${task.exception?.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                } else {
-                    Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
                 }
                 true
             }
