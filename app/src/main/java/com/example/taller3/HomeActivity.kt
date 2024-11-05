@@ -155,40 +155,46 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    fun createLocationCallBack() : LocationCallback{
-        val locationCallback = object : LocationCallback(){
-            override fun onLocationResult(result: LocationResult) {
-                super.onLocationResult(result)
-                val location= result.lastLocation
-                if(location!=null){
-                    if(posActual==null){
-                        posActual=location
-                    }else{
-                        if(distancia(LatLng(posActual!!.latitude,posActual!!.longitude), location)>0.03){
-                            posActual=location
-                        }
+    fun createLocationCallBack(): LocationCallback {
+    val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(result: LocationResult) {
+            super.onLocationResult(result)
+            val location = result.lastLocation
+            if (location != null) {
+                if (posActual == null) {
+                    posActual = location
+                } else {
+                    if (distancia(LatLng(posActual!!.latitude, posActual!!.longitude), location) > 0.001) {
+                        posActual = location
                     }
-                    posActual = result.lastLocation!!
-                    userMarker?.remove()
+                }
+                posActual = result.lastLocation!!
+                userMarker?.remove()
 
+                val userId = auth.currentUser?.uid ?: return
+                val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
+                database.get().addOnSuccessListener { dataSnapshot ->
+                    val userName = dataSnapshot.child("name").getValue(String::class.java) ?: "Unknown"
+                    val userLastname = dataSnapshot.child("lastname").getValue(String::class.java) ?: "User"
+                    val fullName = "$userName $userLastname"
                     userMarker = mMap.addMarker(
                         MarkerOptions().position(LatLng(posActual!!.latitude, posActual!!.longitude))
-                            .title("PosDelUsuario")
+                            .title(fullName)
                             .icon(bitmapDescriptorFromVector(this@HomeActivity, R.drawable.baseline_add_location_24))
                     )
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(posActual!!.latitude, posActual!!.longitude)))
                     mMap.moveCamera(CameraUpdateFactory.zoomTo(17f))
 
-                    val userId = auth.currentUser?.uid ?: return
-                    val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
                     database.child("latitud").setValue(posActual!!.latitude)
                     database.child("longitud").setValue(posActual!!.longitude)
-
+                }.addOnFailureListener {
+                    Toast.makeText(this@HomeActivity, "Failed to retrieve user name", Toast.LENGTH_SHORT).show()
                 }
             }
         }
-        return locationCallback
     }
+    return locationCallback
+}
 
     private fun locationSettings() {
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
