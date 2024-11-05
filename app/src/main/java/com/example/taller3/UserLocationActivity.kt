@@ -58,7 +58,6 @@ class UserLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityUserLocationBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
 
         auth = FirebaseAuth.getInstance()
 
@@ -170,62 +169,6 @@ class UserLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             val dist = distancia(posUsuario!!,posActual!!)
             binding.distancia.setText("$username : $dist m")
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.homenu, menu)
-        return true
-    }
-
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.signOut -> {
-                auth.signOut()
-                val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-                true
-            }
-
-            R.id.available -> {
-                val userId = auth.currentUser?.uid
-                if (userId != null) {
-
-                    val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
-                    database.child("available").setValue(true)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Available status updated", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(this, "Failed to update status", Toast.LENGTH_SHORT).show()
-                        }
-                }
-                true
-            }
-            R.id.notAvailable -> {
-                val userId = auth.currentUser?.uid
-                if (userId != null) {
-
-                    val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
-                    database.child("available").setValue(false)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Available status updated", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(this, "Failed to update status", Toast.LENGTH_SHORT).show()
-                        }
-                }
-                true
-            }
-            R.id.search -> {
-                startActivity(Intent(this, ListUsersActivity::class.java))
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
-        }
-
     }
 
 }
