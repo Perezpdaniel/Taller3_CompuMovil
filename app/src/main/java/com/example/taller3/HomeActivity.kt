@@ -270,8 +270,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 true
             }
             R.id.search -> {
-                //val intent = Intent(this, SearchActivity::class.java)
-                startActivity(intent)
+                startActivity(Intent(this, ListUsersActivity::class.java))
                 true
             }
 
