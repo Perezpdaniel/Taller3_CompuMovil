@@ -42,6 +42,7 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Marker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import org.json.JSONArray
@@ -57,6 +58,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityHomeBinding
     private lateinit var auth: FirebaseAuth
+    private var userMarker: Marker? = null
 
     //permiso de la ubicacion
     val locationPermission = registerForActivityResult(
@@ -161,13 +163,19 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     if(posActual==null){
                         posActual=location
                     }else{
-                        if(distancia(LatLng(posActual!!.latitude,posActual!!.longitude), location)>0.03){
+                        if(distancia(LatLng(posActual!!.latitude,posActual!!.longitude), location)>0.05){
                             posActual=location
                         }
                     }
-                    posActual = result.lastLocation!!
 
-                    drawMarker(LatLng(posActual!!.latitude,posActual!!.longitude),"PosDelUsuario",R.drawable.baseline_add_location_24)
+                    if (userMarker == null) {
+                        userMarker = mMap.addMarker(MarkerOptions().position(LatLng(posActual!!.latitude,posActual!!.longitude)).title("User Location"))
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(posActual!!.latitude,posActual!!.longitude), 15f))
+                    } else {
+                        userMarker!!.position = LatLng(posActual!!.latitude,posActual!!.longitude)
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(posActual!!.latitude,posActual!!.longitude), 15f))
+                    }
+                    userMarker?.setIcon(bitmapDescriptorFromVector(this@HomeActivity, R.drawable.baseline_add_location_24))
 
                     val userId = auth.currentUser?.uid ?: return
                     val database = FirebaseDatabase.getInstance().getReference("users").child(userId)

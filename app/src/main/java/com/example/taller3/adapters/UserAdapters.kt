@@ -48,6 +48,7 @@ class UserAdapter(private val context: Context, private val userList: List<MyUse
             val intent = Intent(context, UserLocationActivity::class.java)
             intent.putExtra("USER_ID", user.id)
             intent.putExtra("USER_NAME", "${user.name} ${user.lastname}")
+            intent.putExtra("USER_IMAGE", user.image)
             context.startActivity(intent)
         }
 
