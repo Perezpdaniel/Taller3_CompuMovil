@@ -42,6 +42,7 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Marker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -58,6 +59,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityHomeBinding
     private lateinit var auth: FirebaseAuth
+    private var userMarker: Marker? = null
 
     //permiso de la ubicacion
     val locationPermission = registerForActivityResult(
@@ -167,8 +169,15 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                     }
                     posActual = result.lastLocation!!
+                    userMarker?.remove()
 
-                    drawMarker(LatLng(posActual!!.latitude,posActual!!.longitude),"PosDelUsuario",R.drawable.baseline_add_location_24)
+                    userMarker = mMap.addMarker(
+                        MarkerOptions().position(LatLng(posActual!!.latitude, posActual!!.longitude))
+                            .title("PosDelUsuario")
+                            .icon(bitmapDescriptorFromVector(this@HomeActivity, R.drawable.baseline_add_location_24))
+                    )
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(posActual!!.latitude, posActual!!.longitude)))
+                    mMap.moveCamera(CameraUpdateFactory.zoomTo(17f))
 
                     val userId = auth.currentUser?.uid ?: return
                     val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
