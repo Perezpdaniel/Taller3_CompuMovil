@@ -26,22 +26,6 @@
         android:title="Marcar como No disponible"
         android:color="#000000"
         android:visible="true" />
-    <item
-        android:title="Buscar Disponibles"
-        android:id="@+id/search"
-        android:icon="@drawable/baseline_person_search_24"
-        android:color="#000000"
-        />
-    <item
-        android:title="Marcar como NO disponible"
-        android:id="@+id/noAvailable"
-        android:icon="@drawable/baseline_do_not_disturb_24"
 
-        />
-    <item
-        android:title="Mostrar Disponibles"
-        android:id="@+id/search"
-        android:icon="@drawable/baseline_person_search_24"
 
-        />
 </menu>
