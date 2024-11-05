@@ -154,39 +154,47 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    fun createLocationCallBack() : LocationCallback{
-        val locationCallback = object : LocationCallback(){
-            override fun onLocationResult(result: LocationResult) {
-                super.onLocationResult(result)
-                val location= result.lastLocation
-                if(location!=null){
-                    if(posActual==null){
-                        posActual=location
-                    }else{
-                        if(distancia(LatLng(posActual!!.latitude,posActual!!.longitude), location)>0.05){
-                            posActual=location
-                        }
-                    }
 
-                    if (userMarker == null) {
-                        userMarker = mMap.addMarker(MarkerOptions().position(LatLng(posActual!!.latitude,posActual!!.longitude)).title("User Location"))
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(posActual!!.latitude,posActual!!.longitude), 15f))
-                    } else {
-                        userMarker!!.position = LatLng(posActual!!.latitude,posActual!!.longitude)
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(posActual!!.latitude,posActual!!.longitude), 15f))
+    fun createLocationCallBack(): LocationCallback {
+    val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(result: LocationResult) {
+            super.onLocationResult(result)
+            val location = result.lastLocation
+            if (location != null) {
+                if (posActual == null) {
+                    posActual = location
+                } else {
+                    if (distancia(LatLng(posActual!!.latitude, posActual!!.longitude), location) > 0.001) {
+                        posActual = location
                     }
-                    userMarker?.setIcon(bitmapDescriptorFromVector(this@HomeActivity, R.drawable.baseline_add_location_24))
+                }
+                posActual = result.lastLocation!!
+                userMarker?.remove()
 
-                    val userId = auth.currentUser?.uid ?: return
-                    val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
+                val userId = auth.currentUser?.uid ?: return
+                val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
+                database.get().addOnSuccessListener { dataSnapshot ->
+                    val userName = dataSnapshot.child("name").getValue(String::class.java) ?: "Unknown"
+                    val userLastname = dataSnapshot.child("lastname").getValue(String::class.java) ?: "User"
+                    val fullName = "$userName $userLastname"
+                    userMarker = mMap.addMarker(
+                        MarkerOptions().position(LatLng(posActual!!.latitude, posActual!!.longitude))
+                            .title(fullName)
+                            .icon(bitmapDescriptorFromVector(this@HomeActivity, R.drawable.baseline_add_location_24))
+                    )
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(posActual!!.latitude, posActual!!.longitude)))
+                    mMap.moveCamera(CameraUpdateFactory.zoomTo(17f))
+
                     database.child("latitud").setValue(posActual!!.latitude)
                     database.child("longitud").setValue(posActual!!.longitude)
-
+                }.addOnFailureListener {
+                    Toast.makeText(this@HomeActivity, "Failed to retrieve user name", Toast.LENGTH_SHORT).show()
                 }
             }
         }
-        return locationCallback
     }
+    return locationCallback
+}
 
     private fun locationSettings() {
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
