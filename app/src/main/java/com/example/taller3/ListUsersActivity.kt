@@ -34,6 +34,7 @@ class ListUsersActivity : AppCompatActivity() {
                 for (userSnapshot in snapshot.children) {
                     val user = userSnapshot.getValue(MyUser::class.java)
                     if (user != null && user.available) {
+                        user.id = userSnapshot.key ?: ""
                         userList.add(user)
                     }
                 }

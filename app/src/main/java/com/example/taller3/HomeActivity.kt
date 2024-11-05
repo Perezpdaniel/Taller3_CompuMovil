@@ -44,7 +44,6 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-
 import org.json.JSONArray
 import org.json.JSONObject
 import com.google.firebase.storage.FirebaseStorage
