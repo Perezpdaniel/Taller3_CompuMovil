@@ -163,7 +163,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun comenzarServicioNotificaciones() {
         val intent = Intent(this, UserStatusService::class.java)
-        startService(intent)
+        ContextCompat.startForegroundService(this, intent) // Usa startForegroundService si es necesario
     }
+
 
 }

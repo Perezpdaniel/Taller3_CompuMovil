@@ -1,5 +1,6 @@
 package com.example.taller3.services
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -28,12 +29,20 @@ class UserStatusService : Service() {
     private val userStatusMap = mutableMapOf<String, Boolean>()
 
 
+    @SuppressLint("ForegroundServiceType")
     override fun onCreate() {
         super.onCreate()
-        Log.d("UserStatusService", "Servicio iniciado")
+        Log.d("UserStatusService", "Servicio iniciado en Primer Plano")
         createNotificationChannel()
+        val notification = NotificationCompat.Builder(this, "USER_STATUS_CHANNEL")
+            .setContentTitle("Servicio Activo")
+            .setContentText("Escuchando cambios en la disponibilidad de usuarios.")
+            .setSmallIcon(R.drawable.baseline_notifications_active_24)
+            .build()
+        startForeground(1, notification)
         listenForAvailableUsers()
     }
+
 
     private fun listenForAvailableUsers() {
         Log.d("UserStatusService", "Iniciando carga de usuarios iniciales")
@@ -85,22 +94,27 @@ class UserStatusService : Service() {
         database.addValueEventListener(userListener)
     }
 
-
     private fun sendNotification(user: MyUser) {
         val intent = Intent(this, UserLocationActivity::class.java).apply {
             putExtra("latitude", user.latitud)
             putExtra("longitude", user.longitud)
             putExtra("userName", "${user.name} ${user.lastname}")
             putExtra("userEmail", user.email)
+            putExtra("USER_ID", user.id) // Asegúrate de pasar el ID del usuario
         }
 
         val targetActivity = if (auth.currentUser != null) UserLocationActivity::class.java else MainActivity::class.java
         intent.setClass(this, targetActivity)
 
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            user.id.hashCode(), // Usa un requestCode único
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         val notification = NotificationCompat.Builder(this, "USER_STATUS_CHANNEL")
-            .setContentTitle("Usuario disponible")
+            .setContentTitle("Usuario Disponible")
             .setContentText("${user.name} ${user.lastname} está ahora disponible.")
             .setSmallIcon(R.drawable.baseline_notifications_active_24)
             .setContentIntent(pendingIntent)
@@ -108,7 +122,7 @@ class UserStatusService : Service() {
             .build()
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(1, notification)
+        notificationManager.notify(user.id.hashCode(), notification) // Usa un ID único basado en el usuario
     }
 
     private fun createNotificationChannel() {
