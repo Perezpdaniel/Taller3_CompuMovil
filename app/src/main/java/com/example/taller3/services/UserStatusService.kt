@@ -30,13 +30,16 @@ class UserStatusService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.d("UserStatusService", "Servicio iniciado")
         createNotificationChannel()
         listenForAvailableUsers()
     }
 
     private fun listenForAvailableUsers() {
+        Log.d("UserStatusService", "Iniciando carga de usuarios iniciales")
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                Log.d("UserStatusService", "Datos iniciales cargados")
                 for (userSnapshot in snapshot.children) {
                     val user = userSnapshot.getValue(MyUser::class.java)
                     val userId = userSnapshot.key
@@ -45,7 +48,6 @@ class UserStatusService : Service() {
                         userStatusMap[userId.toString()] = user.available
                     }
                 }
-
                 addRealtimeListener()
             }
 
@@ -56,8 +58,10 @@ class UserStatusService : Service() {
     }
 
     private fun addRealtimeListener() {
+        Log.d("UserStatusService", "Añadiendo listener en tiempo real")
         userListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                Log.d("UserStatusService", "Detectando cambios en usuarios")
                 for (userSnapshot in snapshot.children) {
                     val user = userSnapshot.getValue(MyUser::class.java)
                     val currentUser = auth.currentUser
@@ -66,6 +70,7 @@ class UserStatusService : Service() {
                     if (user != null && currentUser != null && userId != currentUser.uid) {
                         val wasAvailable = userStatusMap[userId.toString()] ?: false
                         if (user.available && !wasAvailable) {
+                            Log.d("UserStatusService", "Usuario ${user.name} ${user.lastname} ahora está disponible")
                             sendNotification(user)
                         }
                         userStatusMap[userId.toString()] = user.available
@@ -79,6 +84,7 @@ class UserStatusService : Service() {
         }
         database.addValueEventListener(userListener)
     }
+
 
     private fun sendNotification(user: MyUser) {
         val intent = Intent(this, UserLocationActivity::class.java).apply {
