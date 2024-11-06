@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Permiso de notificaciones denegado", Toast.LENGTH_LONG).show()
         }
     }
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -66,45 +66,17 @@ class MainActivity : AppCompatActivity() {
                 loginUser(email, password)
             }
         }
-        permisoNotificacionesYServicio(android.Manifest.permission.POST_NOTIFICATIONS)
-
+        // Manejar permisos de notificación según la versión de Android
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permisoNotificacionesYServicio(android.Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            comenzarServicioNotificaciones()
+        }
     }
 
     // Actualizar la UI si el usuario está autenticado
     private fun updateUI(currentUser: FirebaseUser?) {
         if (currentUser != null) {
-            /*
-            val userId = currentUser.uid
-            userRef = database.getReference("users").child(userId)
-
-            Log.d(TAG, "Attempting to retrieve user data for userId: $userId")
-
-            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        val user = dataSnapshot.getValue(MyUser::class.java)
-                        if (user != null) {
-                            Log.d(TAG, "User data retrieved, navigating to HomeActivity.")
-                            val intent = Intent(baseContext, HomeActivity::class.java)
-                            intent.putExtra("user", user)
-                            startActivity(intent)
-                        } else {
-                            Log.d(TAG, "User data is null")
-                            Toast.makeText(baseContext, "User data not found", Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        Log.d(TAG, "User data not found")
-                        Toast.makeText(baseContext, "User data not found", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.e(TAG, "Error retrieving user data: ${databaseError.message}")
-
-                }
-
-            })
-            */
              startActivity(Intent(baseContext, HomeActivity::class.java))
         }
     }
@@ -149,17 +121,17 @@ class MainActivity : AppCompatActivity() {
         return email.matches(regex.toRegex())
     }
 
-    private fun permisoNotificacionesYServicio(permission:String) {
-        if(ContextCompat.checkSelfPermission(this,permission)== PackageManager.PERMISSION_DENIED){
-            if(shouldShowRequestPermissionRationale(permission)){
-                Toast.makeText(this,"Por favor acepte las notificaciones para poder recibir notificaciones",
-                    Toast.LENGTH_LONG).show()
+    private fun permisoNotificacionesYServicio(permission: String) {
+        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED) {
+            if (shouldShowRequestPermissionRationale(permission)) {
+                Toast.makeText(this, "Por favor acepte las notificaciones para poder recibir notificaciones", Toast.LENGTH_LONG).show()
             }
             notificationPermissionLauncher.launch(permission)
-        }else{
+        } else {
             comenzarServicioNotificaciones()
         }
     }
+
 
     private fun comenzarServicioNotificaciones() {
         val intent = Intent(this, UserStatusService::class.java)

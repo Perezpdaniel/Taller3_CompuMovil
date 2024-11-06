@@ -95,12 +95,17 @@ class UserStatusService : Service() {
     }
 
     private fun sendNotification(user: MyUser) {
+        if (user.id.isEmpty()) {
+            Log.e("UserStatusService", "El ID del usuario está vacío. No se puede enviar notificación.")
+            return
+        }
+
         val intent = Intent(this, UserLocationActivity::class.java).apply {
             putExtra("latitude", user.latitud)
             putExtra("longitude", user.longitud)
             putExtra("userName", "${user.name} ${user.lastname}")
             putExtra("userEmail", user.email)
-            putExtra("USER_ID", user.id) // Asegúrate de pasar el ID del usuario
+            putExtra("USER_ID", user.id)
         }
 
         val targetActivity = if (auth.currentUser != null) UserLocationActivity::class.java else MainActivity::class.java
@@ -108,7 +113,7 @@ class UserStatusService : Service() {
 
         val pendingIntent = PendingIntent.getActivity(
             this,
-            user.id.hashCode(), // Usa un requestCode único
+            user.id.hashCode(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -116,14 +121,15 @@ class UserStatusService : Service() {
         val notification = NotificationCompat.Builder(this, "USER_STATUS_CHANNEL")
             .setContentTitle("Usuario Disponible")
             .setContentText("${user.name} ${user.lastname} está ahora disponible.")
-            .setSmallIcon(R.drawable.baseline_notifications_active_24)
+            .setSmallIcon(R.drawable.baseline_notifications_active_24) // Verifica este recurso
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(user.id.hashCode(), notification) // Usa un ID único basado en el usuario
+        notificationManager.notify(user.id.hashCode(), notification)
     }
+
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -137,6 +143,7 @@ class UserStatusService : Service() {
             notificationManager.createNotificationChannel(channel)
         }
     }
+
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
